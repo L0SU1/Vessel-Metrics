@@ -410,9 +410,9 @@ def aggregate_segmentation_metrics(output_folder):
     ]
     # tortuosity fields to weight
     tort_fields = [
-        'root1_mean_curvature','root1_mean_square_curvature',
-        'root2_mean_curvature','root2_mean_square_curvature',
-        'root3_mean_curvature','root3_mean_square_curvature'
+        'Largest_endpoint_root_mean_curvature','Largest_endpoint_root_mean_square_curvature',
+        '2nd_Largest_endpoint_root_mean_curvature','2nd_Largest_endpoint_root_mean_square_curvature'
+        'Largest_bifurcation_root_mean_curvature','Largest_bifurcation_root_mean_square_curvature'
     ]
 
     # accumulators
@@ -497,7 +497,12 @@ def save_results(results, output_folder, save_masks=True):
         # with keys 'mean_curvature' and 'mean_square_curvature'
         agg = data.get('aggregated_tortuosity_by_root', [])
         for i in range(3):
-            prefix = f'root{i+1}_'
+            if i==0:
+                prefix = 'Largest_endpoint_root_'
+            elif i==1:
+                prefix = '2nd_Largest_endpoint_root_'
+            elif i==2:
+                prefix = 'Largest_bifurcation_root_'
             if i < len(agg):
                 gen_data[prefix + 'mean_curvature']        = agg[i].get('mean_curvature', np.nan)
                 gen_data[prefix + 'mean_square_curvature'] = agg[i].get('mean_square_curvature', np.nan)
@@ -739,6 +744,7 @@ def process(mask_path, min_size, selected_metrics, save_masks=True):
 
 
 if __name__=='__main__':
+
     p=argparse.ArgumentParser(description='Vessel analysis; disable segment masks with flag')
     p.add_argument('input',help='Path to vessel mask (.nii/.nii.gz or .npy/.npz)')
     p.add_argument('--min_size',type=int,default=32,help='Minimum cc size')
